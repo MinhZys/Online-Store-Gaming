@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:pt="jakarta.faces.passthrough">
+
+    <ui:composition template="/templates/main.xhtml">
+
+        <ui:define name="title">#{productBean.currentProduct.productName} - Gaming Equipment Store</ui:define>
+
+        <ui:define name="content">
+            <f:event type="preRenderView" listener="#{productBean.preRenderView}" />
+            <div class="container my-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><h:link outcome="index">Home Page</h:link></li>
+                        <li class="breadcrumb-item"><h:link outcome="products">Products</h:link></li>
+                        <li class="breadcrumb-item active">#{productBean.currentProduct.productName}</li>
+                    </ol>
+                </nav>
+
+                <!-- Product Detail Section -->
+                <div class="row">
+                    <!-- Product Images -->
+                    <div class="col-md-6">
+                        <div class="product-gallery">
+                            <div class="main-image mb-3">
+                                <h:graphicImage value="/asset/images/#{productBean.currentProduct.image}" 
+                                                alt="#{productBean.currentProduct.productName}" 
+                                                styleClass="img-fluid rounded shadow" />
+                            </div>
+                            <div class="thumbnail-images d-flex gap-2">
+                                <div class="thumbnail">
+                                    <h:graphicImage value="/asset/images/#{productBean.currentProduct.image}" 
+                                                    alt="#{productBean.currentProduct.productName}" 
+                                                    styleClass="img-fluid rounded" />
+                                </div>
+                                <!-- Additional images can be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h1 class="product-title mb-3">#{productBean.currentProduct.productName}</h1>
+
+                            <!-- Rating -->
+                            <div class="product-rating mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="stars text-warning me-2">#{productBean.getStarsDisplay(productBean.averageRating)}</span>
+                                    <span class="rating-text text-muted">
+                                        (#{productBean.averageRating}/5) - #{productBean.reviewCount} Product Reviews
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="product-price mb-4">
+                                <h3 class="current-price text-danger mb-0">#{productBean.formatPrice(productBean.currentProduct.price)} $</h3>
+                            </div>
+
+                            <div class="product-info mb-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="info-item mb-2">
+                                            <span class="label fw-bold">Brand:</span>
+                                            <span class="value">#{productBean.currentProduct.brand}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-item mb-2">
+                                            <span class="label fw-bold">Category:</span>
+                                            <span class="value">#{productBean.currentProduct.categoryID.categoryName}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-item mb-2">
+                                            <span class="label fw-bold">Status:</span>
+                                            <span class="value #{productBean.currentProduct.stock > 0 ? 'text-success' : 'text-danger'}">
+                                                #{productBean.currentProduct.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="info-item mb-2" rendered="#{productBean.currentProduct.stock > 0}">
+                                            <span class="label fw-bold">Quantity:</span>
+                                            <span class="value">#{productBean.currentProduct.stock} items</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="product-description mb-4">
+                                <h5>Product Description</h5>
+                                <p class="text-muted">#{productBean.currentProduct.description}</p>
+                            </div>
+
+                            <!-- Add to Cart -->
+                            <div class="add-to-cart mb-4">
+                                <h:form id="addToCartForm">
+                                    <h:inputHidden value="#{productBean.currentProduct.productID}" />
+
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold">Quantity:</label>
+                                            <h:inputText value="#{productBean.quantity}" 
+                                                         styleClass="form-control"
+                                                         pt:type="number"
+                                                         pt:min="1"
+                                                         pt:max="#{productBean.currentProduct.stock}" />
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <!-- Add to Cart Button -->
+                                            <h:commandButton id="btnAddToCart"
+                                                             value="Add to Cart"
+                                                             action="#{cartBean.addToCart(productBean.currentProduct.productID, productBean.quantity)}"
+                                                             styleClass="btn btn-primary btn-lg w-100"
+                                                             disabled="#{productBean.currentProduct.stock == 0}">
+                                                <!-- Call JavaScript after successful submission -->
+                                                <f:ajax execute="@form" render="@form"
+                                                        onevent="function(data){ 
+                                                        if(data.status === 'success'){ 
+                                                        console.log('✅ Product added to cart!');
+                                                        alert('Product has been added to your cart!');
+                                                        } 
+                                                        }"/>
+                                            </h:commandButton>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>             
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Tabs -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="description-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#description" type="button" role="tab">
+                                    Detailed Description
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="productTabsContent">
+                            <!-- Description Tab -->
+                            <div class="tab-pane fade show active" id="description" role="tabpanel">
+                                <div class="p-4">
+                                    <h5>Detailed description</h5>
+                                    <p>#{productBean.currentProduct.description}</p>
+                                </div>
+                            </div>                      
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <h4 class="mb-4">Related Products</h4>
+                        <div class="row">
+                            <ui:repeat value="#{productBean.relatedProducts}" var="relatedProduct">
+                                <div class="col-md-3 mb-4">
+                                    <div class="card product-card h-100">
+                                        <h:link outcome="product-detail?id=#{relatedProduct.productID}">
+                                            <div class="product-image">
+                                                <h:graphicImage value="/asset/images/#{relatedProduct.image}" 
+                                                                alt="#{relatedProduct.productName}" 
+                                                                styleClass="card-img-top" />
+                                            </div>
+                                            <div class="card-body">
+                                                <h6 class="card-title">#{relatedProduct.productName}</h6>
+                                                <p class="card-text text-danger fw-bold">#{productBean.formatPrice(relatedProduct.price)}$</p>
+                                            </div>
+                                        </h:link>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </ui:define>
+
+        <ui:define name="styles">
+            <style>
+                .product-gallery {
+                    margin-bottom: 30px;
+                }
+
+                .main-image {
+                    margin-bottom: 15px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+
+                .thumbnail-images {
+                    display: flex;
+                    gap: 10px;
+                }
+
+                .thumbnail {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 5px;
+                    overflow: hidden;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                }
+
+                .thumbnail:hover {
+                    border-color: #007bff;
+                }
+
+                .product-details {
+                    padding-left: 30px;
+                }
+
+                .product-title {
+                    font-size: 2em;
+                    font-weight: bold;
+                    margin-bottom: 15px;
+                }
+
+                .product-rating {
+                    margin-bottom: 20px;
+                }
+
+                .stars {
+                    color: #f39c12;
+                    font-size: 1.2em;
+                }
+
+                .rating-text {
+                    margin-left: 10px;
+                    color: #666;
+                }
+
+                .product-price {
+                    margin-bottom: 20px;
+                }
+
+                .current-price {
+                    font-size: 2em;
+                    font-weight: bold;
+                    color: #e74c3c;
+                }
+
+                .product-info {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                }
+
+                .info-item {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+
+                .info-item .label {
+                    font-weight: bold;
+                }
+
+                .product-features {
+                    margin-top: 30px;
+                }
+
+                .feature-list {
+                    list-style: none;
+                    padding: 0;
+                }
+
+                .feature-list li {
+                    margin-bottom: 10px;
+                }
+
+                .review-item {
+                    border-bottom: 1px solid #eee;
+                    padding: 20px 0;
+                }
+
+                .review-header {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+
+                .review-rating .stars {
+                    font-size: 1em;
+                }
+
+                .review-date {
+                    color: #666;
+                    font-size: 0.9em;
+                }
+
+                .product-card {
+                    transition: transform 0.3s ease;
+                }
+
+                .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+
+                .nav-tabs .nav-link {
+                    border: none;
+                    border-bottom: 2px solid transparent;
+                    color: #666;
+                }
+
+                .nav-tabs .nav-link.active {
+                    border-bottom-color: #007bff;
+                    color: #007bff;
+                }
+
+                .tab-content {
+                    border: 1px solid #dee2e6;
+                    border-top: none;
+                    border-radius: 0 0 0.375rem 0.375rem;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

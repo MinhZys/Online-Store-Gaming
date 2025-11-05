@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core">
+
+    <footer class="footer bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Company Info -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-warning mb-3">
+                        <i class="fas fa-gamepad me-2"></i>
+                        Gaming Equipment Store
+                    </h5>
+                    <p class="mb-3">
+                        Specializing in premium gaming products and accessories with the highest quality.
+                    </p>
+                    
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-2 mb-4">
+                    <h6 class="text-warning mb-3">Products</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <h:link outcome="products" styleClass="text-light text-decoration-none">
+                                All Products
+                            </h:link>
+                        </li>
+                        <li class="mb-2">
+                            Gaming Keyboards
+                        </li>
+                        <li class="mb-2">
+                            Gaming Mice
+                        </li>
+                        <li class="mb-2">
+                            Gaming Chairs
+                        </li>
+                    </ul>
+                </div>
+
+
+                <!-- Contact Info -->
+                <div class="col-md-6 mb-4">
+                    <h6 class="text-warning mb-3">Contact Information</h6>
+                    <div class="contact-info">
+                        <div class="mb-3">
+                            <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                            <span>123 ABC Street, District 1, Ho Chi Minh City</span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-phone text-warning me-2"></i>
+                            <span>+84 123 456 789</span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-envelope text-warning me-2"></i>
+                            <span>info@gamingstore.com</span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-clock text-warning me-2"></i>
+                            <span>Monday – Sunday: 8:00 AM – 10:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Bar -->
+            <hr class="my-4 border-secondary" />
+            
+        </div>
+    </footer>
+
+</ui:composition>

@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/admin.xhtml">
+    <ui:define name="title">User Management - Admin Panel</ui:define>
+    <ui:define name="page-title">User Management</ui:define>
+    
+    <!-- Admin Access Control -->
+    <f:event type="preRenderView" listener="#{adminAccessBean.checkAdminAccess}" />
+
+    <ui:define name="content">
+        <!-- Messages -->
+        <h:messages globalOnly="true" styleClass="alert" showDetail="true" />
+
+        <!-- Search Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-search me-2"></i>Search Users</h5>
+            </div>
+            <div class="card-body">
+                <h:form id="searchForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h:outputLabel for="searchKeyword" value="Search" styleClass="form-label" />
+                            <h:inputText id="searchKeyword" 
+                                        value="#{userController.searchKeyword}" 
+                                        styleClass="form-control" 
+                                        requiredMessage="Enter name or email..." />
+                        </div>
+                        <div class="col-md-3 mb-3 d-flex align-items-end">
+                            <h:commandButton value="Search" 
+                                             action="#{userController.searchUsers()}" 
+                                             styleClass="btn btn-primary me-2" />
+                            <h:commandButton value="Refresh" 
+                                             action="#{userController.loadUsers()}" 
+                                             styleClass="btn btn-outline-secondary" />
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Add New User Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-user-plus me-2"></i>Add New User</h5>
+            </div>
+            <div class="card-body">
+                <h:form id="newUserForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h:outputLabel for="newFullName" value="Full Name" styleClass="form-label" />
+                            <h:inputText id="newFullName" 
+                                        value="#{userController.fullName}" 
+                                        styleClass="form-control" 
+                                        requiredMessage="Enter full name..." />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h:outputLabel for="newEmail" value="Email Address" styleClass="form-label" />
+                            <h:inputText id="newEmail" 
+                                        value="#{userController.email}" 
+                                        styleClass="form-control" 
+                                        requiredMessage="Enter email address..." />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h:outputLabel for="newPassword" value="Password" styleClass="form-label" />
+                            <h:inputSecret id="newPassword" 
+                                          value="#{userController.password}" 
+                                          styleClass="form-control" 
+                                          requiredMessage="Enter password..." />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h:outputLabel for="newRoleName" value="Role" styleClass="form-label" />
+                            <h:selectOneMenu id="newRoleName" 
+                                            value="#{userController.roleId}" 
+                                            styleClass="form-select">
+                                <f:selectItem itemLabel="Select a role" itemValue="#{null}" />
+                                <f:selectItems value="#{userController.availableRoles}" 
+                                              var="role" 
+                                              itemLabel="#{role.roleName}" 
+                                              itemValue="#{role.roleID}" />
+                            </h:selectOneMenu>
+                        </div>
+                        <div class="col-12">
+                            <h:commandButton value="Create User" 
+                                           action="#{userController.createUser()}" 
+                                           styleClass="btn btn-success me-2" />
+                            <h:commandButton value="Cancel" 
+                                           action="#{userController.cancelOperation()}" 
+                                           styleClass="btn btn-outline-secondary" 
+                                           immediate="true" />
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-users me-2"></i>User List (#{userController.users.size()})</h5>
+            </div>
+            <div class="card-body">
+                <h:form id="usersTableForm">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat value="#{userController.users}" var="user">
+                                    <tr class="user-row" style="cursor: pointer;">
+                                        <!-- Hidden commandLink for row click -->
+                                        <h:commandLink id="rowLink#{user.userID}" 
+                                                      action="#{userController.openEditModal(user.userID)}" 
+                                                      style="display: none;">
+                                            <f:ajax render="editUserModal" />
+                                        </h:commandLink>
+                                        
+                                        <td onclick="document.getElementById('usersTableForm:rowLink#{user.userID}').click(); setTimeout(showEditModal, 100);">
+                                            <span class="text-primary fw-bold">#{user.userID}</span>
+                                        </td>
+                                        <td onclick="document.getElementById('usersTableForm:rowLink#{user.userID}').click(); setTimeout(showEditModal, 100);">
+                                            <strong>#{user.fullName}</strong>
+                                        </td>
+                                        <td onclick="document.getElementById('usersTableForm:rowLink#{user.userID}').click(); setTimeout(showEditModal, 100);">#{user.email}</td>
+                                        <td onclick="document.getElementById('usersTableForm:rowLink#{user.userID}').click(); setTimeout(showEditModal, 100);">
+                                            <span class="badge bg-info">#{user.roleID.roleName}</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group" onclick="event.stopPropagation();">
+                                            
+                                            <!-- Edit Button -->
+                                            <h:commandButton value="Edit (#{user.userID})" 
+                                                           action="#{userController.openEditModal(user.userID)}" 
+                                                           styleClass="btn btn-sm btn-outline-primary"
+                                                           onclick="setTimeout(showEditModal, 200);">
+                                                <f:param name="editingUserId" value="#{user.userID}" />
+                                                <f:ajax render="editUserModal editUserModalForm" />
+                                            </h:commandButton>
+                                                
+                                              
+                                                
+                                                <!-- Delete Button -->
+                                                <h:commandButton value="Delete" 
+                                                               action="#{userController.deleteUserDirect(user)}" 
+                                                               styleClass="btn btn-sm btn-danger"
+                                                               onclick="return confirm('Are you sure you want to delete user #{user.fullName}?')" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </h:form>
+
+                <!-- Empty State -->
+                <div class="text-center py-5" rendered="#{empty userController.users}">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No users found</h5>
+                    <p class="text-muted">Add new users to get started</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit User Modal -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true" rendered="#{userController.showEditModal}">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="editUserModalLabel">
+                            <i class="fas fa-user-edit me-2"></i>Edit User
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <h:form id="editUserModalForm">
+                        <!-- Hidden input to store user ID -->
+                        <h:inputHidden value="#{userController.editingUserId}" />
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h:outputLabel for="editFullName" value="Full Name" styleClass="form-label" />
+                                    <h:inputText id="editFullName" 
+                                                value="#{userController.fullName}" 
+                                                styleClass="form-control" 
+                                                required="true"
+                                                requiredMessage="Enter full name..." />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h:outputLabel for="editEmail" value="Email Address" styleClass="form-label" />
+                                    <h:inputText id="editEmail" 
+                                                value="#{userController.email}" 
+                                                styleClass="form-control" 
+                                                required="true"
+                                                requiredMessage="Enter email address..." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h:outputLabel for="editPassword" value="New Password" styleClass="form-label" />
+                                    <h:inputSecret id="editPassword" 
+                                                  value="#{userController.password}" 
+                                                  styleClass="form-control"
+                                                  requiredMessage="Enter new password (optional)..." />
+                                    <div class="form-text">Leave blank if you don't want to change password</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h:outputLabel for="editRole" value="Role" styleClass="form-label" />
+                                    <h:selectOneMenu id="editRole" 
+                                                    value="#{userController.roleId}" 
+                                                    styleClass="form-select" 
+                                                    required="true">
+                                        <f:selectItem itemLabel="Select a role" itemValue="#{null}" />
+                                        <f:selectItems value="#{userController.availableRoles}" 
+                                                      var="role" 
+                                                      itemLabel="#{role.roleName}" 
+                                                      itemValue="#{role.roleID}" />
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <h:commandButton value="Update" 
+                                           action="#{userController.updateUserFromModal()}" 
+                                           styleClass="btn btn-primary"
+                                           onclick="setTimeout(function() {
+                                               var modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                                               if (modal) modal.hide();
+                                           }, 1000);">
+                                <f:param name="editingUserId" value="#{userController.editingUserId}" />
+                                <f:ajax render="usersTableForm editUserModal" />
+                            </h:commandButton>
+                            <h:commandButton value="Cancel" 
+                                           action="#{userController.closeEditModal()}" 
+                                           styleClass="btn btn-outline-secondary" 
+                                           immediate="true">
+                                <f:ajax render="editUserModal" />
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CSS for clickable user rows -->
+        <style>
+            .user-row {
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            .user-row:hover {
+                background-color: #f8f9fa !important;
+                transform: translateX(2px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .user-row:active {
+                transform: translateX(1px) scale(0.98);
+                background-color: #e9ecef !important;
+            }
+            .user-row:hover td {
+                border-color: #dee2e6;
+            }
+            .user-row:hover .badge {
+                transform: scale(1.05);
+            }
+            .user-row:hover strong {
+                color: #0d6efd;
+            }
+            .user-row:hover .text-primary {
+                color: #0d6efd !important;
+            }
+            /* Clickable cells */
+            .user-row td:not(:last-child) {
+                cursor: pointer;
+                position: relative;
+            }
+            .user-row td:not(:last-child):hover {
+                background-color: rgba(13, 110, 253, 0.1);
+            }
+            /* Prevent button clicks from triggering row selection */
+            .btn-group {
+                position: relative;
+                z-index: 10;
+            }
+            /* Add visual indicator for clickable rows */
+            .user-row::before {
+                content: "👆";
+                position: absolute;
+                left: -25px;
+                top: 50%;
+                transform: translateY(-50%);
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                font-size: 16px;
+            }
+            .user-row:hover::before {
+                opacity: 0.3;
+            }
+        </style>
+        
+        <!-- JavaScript to show modal -->
+        <script>
+            // Global variable to store editing user ID
+            var currentEditingUserId = null;
+            
+            // Function to set editing user ID
+            function setEditingUserId(userId) {
+                currentEditingUserId = userId;
+                console.log('Set editing user ID:', userId);
+                
+                // Also set the hidden input value
+                var hiddenInput = document.querySelector('input[name*="editingUserId"]');
+                if (hiddenInput) {
+                    hiddenInput.value = userId;
+                    console.log('Set hidden input value to:', userId);
+                }
+            }
+            
+            // Function to show modal
+            function showEditModal() {
+                var editModalElement = document.getElementById('editUserModal');
+                if (editModalElement) {
+                    var editModal = new bootstrap.Modal(editModalElement);
+                    editModal.show();
+                }
+            }
+            
+            
+            // Show modal when showEditModal is true
+            document.addEventListener('DOMContentLoaded', function() {
+                var showModal = false;
+                if (showModal) {
+                    setTimeout(showEditModal, 100);
+                }
+            });
+            
+            // Add event listener for modal close
+            document.addEventListener('DOMContentLoaded', function() {
+                var editModalElement = document.getElementById('editUserModal');
+                if (editModalElement) {
+                    editModalElement.addEventListener('hidden.bs.modal', function () {
+                        // Reset form when modal is closed
+                        console.log('Modal closed, resetting form');
+                    });
+                }
+            });
+        </script>
+    </ui:define>
+</ui:composition>
+
+<style>
+    /* Custom CSS for User Management */
+    .card-header {
+        border-radius: 0.375rem 0.375rem 0 0 !important;
+    }
+    
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .user-row:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+    }
+    
+    .user-row td:not(:last-child) {
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .user-row td:not(:last-child):hover::before {
+        content: "👆";
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        opacity: 0.7;
+    }
+    
+    .btn-group .btn {
+        margin-right: 0.25rem;
+    }
+    
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+    
+    .modal-header {
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .modal-footer {
+        border-top: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .alert {
+        border-radius: 0.5rem;
+        border: none;
+    }
+    
+    .alert-success {
+        background-color: #d1edff;
+        color: #0c5460;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-left: 4px solid #17a2b8;
+    }
+</style>
+</html>

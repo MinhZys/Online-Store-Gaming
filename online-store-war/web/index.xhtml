@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="jakarta.faces.core">
+
+    <ui:composition template="/templates/main.xhtml">
+        <ui:define name="title">Home - Gaming Equipment Store</ui:define>
+
+        <ui:define name="content">
+            <!-- JavaScript for success alert -->
+            <script>
+                window.onload = function () {
+                    // Check URL parameters to show success alert
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('success') === 'true') {
+                        alert('🎉 ORDER SUCCESSFUL! 🎉\n\nThank you for shopping!');
+                        // Remove success parameter from URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                };
+            </script>
+
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="container">
+                    <h1>Welcome to Gaming Equipment Store!</h1>
+                    <p>Your ultimate destination for premium gaming products and accessories</p>
+                    <div class="hero-buttons">
+                        <h:link value="Shop Now" outcome="products" styleClass="btn btn-primary btn-lg me-3" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Categories -->
+            <div class="container my-5">
+                <h2 class="text-center mb-5">Product</h2>
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <div class="category-card">
+                            <h:link outcome="products">
+                                <div class="category-icon">⌨️</div>
+                                <h4>Keyboards</h4>
+                                <p>High-end mechanical gaming keyboards</p>
+                            </h:link>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="category-card">
+                            <h:link outcome="products">
+                                <div class="category-icon">🖱️</div>
+                                <h4>Mice</h4>
+                                <p>Precision gaming mice</p>
+                            </h:link>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="category-card">
+                            <h:link outcome="products">
+                                <div class="category-icon">🪑</div>
+                                <h4>Gaming Chairs</h4>
+                                <p>Comfortable gaming chairs</p>
+                            </h:link>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="category-card">
+                            <h:link outcome="products">
+                                <div class="category-icon">🎧</div>
+                                <h4>Headsets</h4>
+                                <p>High-quality gaming headsets</p>
+                            </h:link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Products Section -->
+            <div class="container my-5">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-store me-2"></i>Community Products</h2>
+                        <p class="text-muted">Explore gaming products listed by the community</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <c:forEach var="product" items="#{productBean.allProducts}" varStatus="status" begin="0" end="5">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 product-card">
+                                <div class="card-img-top-container">
+                                    <h:graphicImage value="/asset/images/#{product.image}" 
+                                                    styleClass="card-img-top" 
+                                                    style="height: 200px; object-fit: cover;"
+                                                    rendered="#{not empty product.image}"/>
+                                    <div class="card-img-placeholder" rendered="#{empty product.image}">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">#{product.productName}</h5>
+                                    <p class="card-text text-muted small">#{product.description}</p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="h5 text-success mb-0">$#{product.price}</span>
+                                            <span class="badge bg-info">#{product.categoryID.categoryName}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">
+                                                <i class="fas fa-box me-1"></i>Remaining: #{product.stock}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="fas fa-store me-1"></i>#{product.supplierID.supplierName}
+                                            </small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <h:link value="View Details" outcome="product-detail" styleClass="btn btn-outline-primary btn-sm w-100">
+                                                <f:param name="id" value="#{product.productID}"/>
+                                            </h:link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+
+                <div class="text-center mt-4">
+                    <h:link value="View All Products" outcome="products" styleClass="btn btn-outline-primary">
+                        <i class="fas fa-arrow-right me-1"></i>
+                    </h:link>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <div class="container">
+                    <h2 class="text-center mb-5">Why Choose Us?</h2>
+                    <div class="col-md-4">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt fa-3x"></i>
+                            <h4>Official Warranty</h4>
+                            <p>12–24 month warranty on all products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </ui:define>
+
+        <ui:define name="styles">
+            <style>
+                /* Hero Section (slide effect only with CSS) */
+                .hero-section {
+                    background-image: url('asset/images/banner1.jpg');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    color: white;
+                    padding: 120px 0;
+                    text-align: center;
+                    margin-top: 0;
+                    position: relative;
+                    animation: heroSlide 15s infinite alternate ease-in-out;
+                }
+
+                .hero-section::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.45);
+                }
+
+                .hero-section .container {
+                    position: relative;
+                    z-index: 2;
+                }
+
+                .hero-section h1 {
+                    font-size: 3.5em;
+                    margin-bottom: 20px;
+                    font-weight: 700;
+                    color: #ffffff;
+                    background: rgba(0, 0, 0, 0); /* nền tối nhẹ, chìm xuống */
+                    display: inline-block;
+                    padding: 10px 25px;
+                    border-radius: 10px;
+                    text-shadow: none; /* bỏ hiệu ứng nổi */
+                }
+
+                .hero-section p {
+                    font-size: 1.3em;
+                    margin-bottom: 30px;
+                    opacity: 0.95;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                }
+
+                .hero-buttons .btn {
+                    margin: 0 10px;
+                    padding: 15px 30px;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                    border-radius: 50px;
+                }
+
+                /* ✅ Keyframes cho hiệu ứng slide ảnh */
+                @keyframes heroSlide {
+                    0% {
+                        background-image: url('asset/images/123.jpg');
+                    }
+                    33% {
+                        background-image: url('asset/images/ban-phim-fullled.jpg');
+                    }
+                    66% {
+                        background-image: url('asset/images/ban-phim-nhogon.jpg');
+                    }
+                    100% {
+                        background-image: url('asset/images/tai-nghe-kodaycorsair.jpg');
+                    }
+                }
+
+                /* Category Cards */
+                .category-card {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px 20px;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                    height: 100%;
+                }
+                .category-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                }
+                .category-card a {
+                    text-decoration: none;
+                    color: inherit;
+                }
+                .category-icon {
+                    font-size: 3em;
+                    margin-bottom: 15px;
+                }
+                .category-card h4 {
+                    color: #333;
+                    margin-bottom: 10px;
+                    font-weight: 600;
+                }
+
+                /* Product Cards */
+                .product-card {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    border: none;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+                }
+                .card-img-top-container {
+                    position: relative;
+                    height: 200px;
+                    overflow: hidden;
+                }
+                .card-img-placeholder {
+                    height: 200px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #f8f9fa;
+                    border-bottom: 1px solid #dee2e6;
+                }
+
+                /* Buttons */
+                .btn-warning {
+                    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+                    border: none;
+                    color: white;
+                    font-weight: 600;
+                }
+                .btn-warning:hover {
+                    background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                }
+
+                /* Features */
+                .features-section {
+                    background: #f8f9fa;
+                    padding: 80px 0;
+                }
+                .feature-item {
+                    padding: 30px 20px;
+                    text-align: center;
+                }
+                .feature-item i {
+                    color: #667eea;
+                    margin-bottom: 20px;
+                }
+                .feature-item h4 {
+                    color: #333;
+                    margin-bottom: 15px;
+                    font-weight: 600;
+                }
+                .feature-item p {
+                    color: #666;
+                    margin-bottom: 0;
+                }
+
+                /* Responsive */
+                @media (max-width: 768px) {
+                    .hero-section {
+                        padding: 70px 0;
+                        background-position: center;
+                    }
+                    .hero-section h1 {
+                        font-size: 2.3em;
+                    }
+                    .hero-section p {
+                        font-size: 1em;
+                    }
+                    .hero-buttons .btn {
+                        display: block;
+                        margin: 10px auto;
+                    }
+                }
+
+            </style>
+        </ui:define>
+    </ui:composition></html>

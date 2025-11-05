@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="/templates/main.xhtml">
+        <ui:define name="title">Cart - Gaming Equipment Store</ui:define>
+
+        <ui:define name="content">
+            <f:event type="preRenderView" listener="#{cartBean.init}" />
+
+            <div class="container-fluid cart-container">
+                <!-- Header -->
+                <div class="page-header">
+                    <div class="container">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><h:link outcome="index">Home</h:link></li>
+                                <li class="breadcrumb-item active">Cart</li>
+                            </ol>
+                        </nav>
+                        <h2>Your Cart</h2>
+                        <p>Review and edit the products in your cart</p>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row">
+
+                        <!-- CART ITEMS -->
+                        <!-- CART ITEMS -->
+                        <div class="col-lg-8">
+                            <h:form id="cartForm">
+                                <h:messages globalOnly="true" styleClass="alert alert-info mb-3" />
+
+                                <ui:repeat value="#{cartBean.cartItems}" var="item">
+                                    <div class="cart-item mb-3 p-3 rounded shadow-sm bg-white">
+                                        <div class="row align-items-center">
+                                            <!-- IMAGE -->
+                                            <div class="col-md-2">
+                                                <h:graphicImage value="/asset/images/#{item.productID.image}"
+                                                                alt="#{item.productID.productName}"
+                                                                styleClass="img-fluid rounded"/>
+                                            </div>
+
+                                            <!-- INFO -->
+                                            <div class="col-md-4">
+                                                <h5>#{item.productID.productName}</h5>
+                                                <p class="text-muted">#{item.productID.brand}</p>
+                                                <p class="fw-bold text-danger">#{cartBean.formatPrice(item.productID.price)}$</p>
+                                            </div>
+
+                                            <!-- QUANTITY -->
+                                            <div class="col-md-3">
+                                                <div class="quantity-controls d-flex align-items-center justify-content-center gap-2">
+                                                    <h:commandButton value="-" 
+                                                                     action="#{cartBean.updateQuantity(item, item.quantity - 1)}"
+                                                                     styleClass="btn btn-outline-secondary btn-sm">
+                                                        <f:ajax execute="@this" render=":cartForm :cartSummary"
+                                                                onevent="function(e){if(e.status==='success'){console.log('✅ Quantity decreased successfully');}}"/>
+                                                    </h:commandButton>
+
+                                                    <h:inputText value="#{item.quantity}" styleClass="form-control text-center" readonly="true" />
+
+                                                    <h:commandButton value="+" 
+                                                                     action="#{cartBean.updateQuantity(item, item.quantity + 1)}"
+                                                                     styleClass="btn btn-outline-secondary btn-sm">
+                                                        <f:ajax execute="@this" render=":cartForm :cartSummary"
+                                                                onevent="function(e){if(e.status==='success'){console.log('✅ Quantity increased successfully');}}"/>
+                                                    </h:commandButton>
+                                                </div>
+                                            </div>
+
+                                            <!-- TOTAL -->
+                                            <div class="col-md-2 fw-bold text-end">
+                                                #{cartBean.formatPrice(cartBean.getItemTotal(item))}$
+                                            </div>
+
+                                            <!-- REMOVE -->
+                                            <div class="col-md-1 text-end">
+                                                <h:commandButton value="X" 
+                                                                 action="#{cartBean.removeFromCart(item)}"
+                                                                 styleClass="btn btn-danger btn-sm rounded">
+                                                    <f:ajax execute="@this" render=":cartForm :cartSummary"
+                                                            onevent="function(e){if(e.status==='success'){console.log('🗑️ Item removed successfully');}}"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:form>
+                        </div>
+
+
+                        <!-- CART SUMMARY -->
+                        <div id="cartSummary" class="col-lg-4" rendered="#{not cartBean.isCartEmpty()}">
+                            <div class="cart-summary shadow-sm bg-white p-4 rounded">
+                                <h4>Order Summary</h4>
+
+                                <div class="d-flex justify-content-between my-2">
+                                    <span>Subtotal:</span>
+                                    <span>#{cartBean.formatPrice(cartBean.totalAmount)}$</span>
+                                </div>
+                                <div class="d-flex justify-content-between my-2">
+                                    <span>Shipping Fee:</span>
+                                    <span class="text-success">Free</span>
+                                </div>
+                                <div class="d-flex justify-content-between my-2">
+                                    <span>Total Items:</span>
+                                    <span>#{cartBean.totalItems} items</span>
+                                </div>
+                                <hr/>
+                                <div class="d-flex justify-content-between fw-bold text-danger my-2">
+                                    <span>Total:</span>
+                                    <span>#{cartBean.formatPrice(cartBean.totalAmount)}$</span>
+                                </div>
+
+                                <h:form>
+                                    <h:commandButton value="Checkout"
+                                                     action="#{cartBean.checkout}"
+                                                     styleClass="btn btn-primary w-100 mt-3">
+                                        <f:ajax render="@none" />
+                                    </h:commandButton>
+                                </h:form>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Continue shopping -->
+                    <div class="text-center mt-4" rendered="#{cartBean.totalItems > 0}">
+                        <h:link outcome="products" styleClass="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+                        </h:link>
+                    </div>
+
+
+                    <!-- Recently Viewed / Suggested -->
+                    <!-- Recently Viewed / Suggested -->
+                    <div class="recently-viewed mt-5" rendered="#{cartBean.totalItems > 0}">
+                        <h4>Products You May Like</h4>
+                        <div class="row">
+                            <ui:repeat value="#{productBean.recommendedProducts}" var="product">
+                                <div class="col-md-3 mb-4">
+                                    <div class="product-card p-3 shadow-sm rounded bg-white h-100">
+                                        <h:link outcome="product-detail">
+                                            <f:param name="id" value="#{product.productID}" />
+                                            <h:graphicImage value="/asset/images/#{product.image}" styleClass="img-fluid rounded mb-2" />
+                                            <h6 class="fw-bold text-dark">#{product.productName}</h6>
+                                            <p class="text-danger fw-bold">#{productBean.formatPrice(product.price)}$</p>
+                                        </h:link>
+
+                                        <h:form>
+                                            <h:link value="View Details" outcome="product-detail"
+                                                    styleClass="btn btn-primary btn-sm">
+                                                <f:param name="id" value="#{product.productID}" />
+                                            </h:link>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="styles">
+            <style>
+                /* Cart Container */
+                .cart-container {
+                    background: #f8f9fa;
+                    min-height: 100vh;
+                    padding: 30px 0;
+                }
+
+                /* Cart Items */
+                .cart-item {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 25px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .cart-item::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                }
+
+                .cart-item:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+                }
+
+                .item-image {
+                    width: 100px;
+                    height: 100px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+
+                .item-image img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.3s ease;
+                }
+
+                .cart-item:hover .item-image img {
+                    transform: scale(1.05);
+                }
+
+                .item-info h5 {
+                    color: #333;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    font-size: 1.1em;
+                }
+
+                .item-brand {
+                    color: #666;
+                    font-size: 0.9em;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                }
+
+                .item-price {
+                    color: #e74c3c;
+                    font-weight: bold;
+                    font-size: 1.2em;
+                    margin-bottom: 15px;
+                }
+
+                /* Quantity Controls */
+                .quantity-controls {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .quantity-btn {
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 8px;
+                    border: 2px solid #e9ecef;
+                    background: white;
+                    color: #667eea;
+                    font-weight: bold;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .quantity-btn:hover {
+                    background: #667eea;
+                    color: white;
+                    border-color: #667eea;
+                    transform: scale(1.1);
+                }
+
+                .quantity-input {
+                    width: 60px;
+                    text-align: center;
+                    border: 2px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 8px;
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .quantity-input:focus {
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                    outline: none;
+                }
+
+                /* Remove Button */
+                .remove-btn {
+                    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                    border: none;
+                    border-radius: 8px;
+                    padding: 8px 15px;
+                    color: white;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+
+                .remove-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+                }
+
+                /* Cart Summary */
+                .cart-summary {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    position: sticky;
+                    top: 20px;
+                    height: fit-content;
+                }
+
+                .cart-summary h4 {
+                    color: #333;
+                    font-weight: 700;
+                    margin-bottom: 25px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #f0f0f0;
+                }
+
+                .summary-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                    padding: 10px 0;
+                }
+
+                .summary-row:not(:last-child) {
+                    border-bottom: 1px solid #f0f0f0;
+                }
+
+                .summary-label {
+                    color: #666;
+                    font-weight: 500;
+                }
+
+                .summary-value {
+                    color: #333;
+                    font-weight: 600;
+                }
+
+                .summary-total {
+                    font-size: 1.2em;
+                    color: #e74c3c;
+                    font-weight: bold;
+                }
+
+                /* Coupon Section */
+                .coupon-section {
+                    background: #f8f9fa;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 25px;
+                    border: 2px dashed #e9ecef;
+                }
+
+                .coupon-section h6 {
+                    color: #333;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                }
+
+                .coupon-input-group {
+                    display: flex;
+                    gap: 10px;
+                }
+
+                .coupon-input {
+                    flex: 1;
+                    border: 2px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 12px 15px;
+                    transition: all 0.3s ease;
+                }
+
+                .coupon-input:focus {
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                    outline: none;
+                }
+
+                .coupon-btn {
+                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                    border: none;
+                    border-radius: 8px;
+                    padding: 12px 20px;
+                    color: white;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+
+                .coupon-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+                }
+
+                /* Checkout Button */
+                .checkout-btn {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    border-radius: 12px;
+                    padding: 15px 30px;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 1.1em;
+                    width: 100%;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .checkout-btn::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    transition: left 0.5s;
+                }
+
+                .checkout-btn:hover::before {
+                    left: 100%;
+                }
+
+                .checkout-btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+                }
+
+                /* Empty Cart */
+                .empty-cart {
+                    text-align: center;
+                    padding: 80px 20px;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                }
+
+                .empty-cart i {
+                    color: #ccc;
+                    font-size: 4em;
+                    margin-bottom: 20px;
+                }
+
+                .empty-cart h3 {
+                    color: #666;
+                    margin-bottom: 15px;
+                    font-weight: 600;
+                }
+
+                .empty-cart p {
+                    color: #999;
+                    margin-bottom: 30px;
+                }
+
+                .empty-cart .btn {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    border-radius: 12px;
+                    padding: 15px 30px;
+                    color: white;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+
+                .empty-cart .btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+                }
+
+                /* Page Header */
+                .page-header {
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    padding: 30px 0;
+                    margin-bottom: 30px;
+                    border-radius: 0 0 20px 20px;
+                }
+
+                .page-header h2 {
+                    color: #333;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                }
+
+                .page-header p {
+                    color: #666;
+                    margin-bottom: 0;
+                }
+
+                /* Breadcrumb */
+                .breadcrumb {
+                    background: transparent;
+                    padding: 0;
+                    margin-bottom: 20px;
+                }
+
+                .breadcrumb-item a {
+                    color: #667eea;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+                }
+
+                .breadcrumb-item a:hover {
+                    color: #5a6fd8;
+                }
+
+                .breadcrumb-item.active {
+                    color: #666;
+                }
+
+                /* Recommended Products */
+                .recently-viewed {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                }
+
+                .recently-viewed h4 {
+                    color: #333;
+                    font-weight: 700;
+                    margin-bottom: 25px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #f0f0f0;
+                }
+
+                .product-card {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 15px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                }
+
+                .product-image {
+                    width: 100%;
+                    height: 150px;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    margin-bottom: 15px;
+                }
+
+                .product-image img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.3s ease;
+                }
+
+                .product-card:hover .product-image img {
+                    transform: scale(1.05);
+                }
+
+                .product-info h6 {
+                    color: #333;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    font-size: 0.9em;
+                    line-height: 1.3;
+                    height: 2.6em;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                }
+
+                .product-price {
+                    color: #e74c3c;
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    margin-bottom: 15px;
+                }
+
+                .product-actions {
+                    margin-top: auto;
+                }
+
+                .product-actions .btn {
+                    width: 100%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    border-radius: 8px;
+                    padding: 8px 15px;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 0.9em;
+                    transition: all 0.3s ease;
+                }
+
+                .product-actions .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .cart-item {
+                        padding: 20px;
+                    }
+
+                    .item-image {
+                        width: 80px;
+                        height: 80px;
+                    }
+
+                    .cart-summary {
+                        position: static;
+                        margin-top: 30px;
+                    }
+
+                    .quantity-controls {
+                        flex-direction: column;
+                        gap: 5px;
+                    }
+
+                    .quantity-btn {
+                        width: 30px;
+                        height: 30px;
+                    }
+
+                    .quantity-input {
+                        width: 50px;
+                    }
+
+                    .coupon-input-group {
+                        flex-direction: column;
+                    }
+
+                    .page-header {
+                        padding: 20px 0;
+                    }
+
+                    .page-header h2 {
+                        font-size: 1.5em;
+                    }
+                }
+
+                @media (max-width: 576px) {
+                    .cart-container {
+                        padding: 20px 0;
+                    }
+
+                    .cart-item {
+                        padding: 15px;
+                    }
+
+                    .cart-summary {
+                        padding: 20px;
+                    }
+
+                    .empty-cart {
+                        padding: 60px 15px;
+                    }
+
+                    .empty-cart i {
+                        font-size: 3em;
+                    }
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

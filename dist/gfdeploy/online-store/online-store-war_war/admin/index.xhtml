@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/admin.xhtml">
+
+    <ui:define name="title">Dashboard - Admin Panel</ui:define>
+    <ui:define name="page-title">Dashboard</ui:define>
+    
+    <!-- Admin Access Control -->
+    <f:event type="preRenderView" listener="#{adminAccessBean.checkAdminAccess}" />
+    <f:event type="preRenderView" listener="#{dashboardBean.loadData}" />
+
+    <ui:define name="content">
+        <!-- Welcome -->
+        <div class="alert alert-info">
+            <h4><i class="fas fa-tachometer-alt me-2"></i>Welcome Admin!</h4>
+            <p>Manage the Online Store system efficiently with visual statistics.</p>
+        </div>
+
+        <!-- Main Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>#{dashboardBean.totalUsers}</h4>
+                                <p class="mb-0">Total Users</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>#{dashboardBean.totalOrders}</h4>
+                                <p class="mb-0">Total Orders</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-shopping-cart fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>#{dashboardBean.totalProducts}</h4>
+                                <p class="mb-0">Total Products</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-box fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>#{dashboardBean.formatPrice(dashboardBean.totalRevenue)}</h4>
+                                <p class="mb-0">Total Revenue</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-dollar-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-2 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-warning">#{dashboardBean.pendingOrders}</h5>
+                        <small>Pending</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-info">#{dashboardBean.confirmedOrders}</h5>
+                        <small>Confirmed</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-2 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-danger">#{dashboardBean.cancelledOrders}</h5>
+                        <small>Cancelled</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-success">#{dashboardBean.formatPrice(dashboardBean.todayRevenue)}</h5>
+                        <small>Today's Revenue</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-success">#{dashboardBean.formatPrice(dashboardBean.thisMonthRevenue)}</h5>
+                        <small>This Month's Revenue</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-4">
+            <!-- Revenue Chart -->
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Monthly Revenue
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Status Chart -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Orders by Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="ordersStatusChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products and Recent Orders -->
+        <div class="row mb-4">
+            <!-- Top Selling Products -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-trophy me-2"></i>Top Selling Products
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="topProductsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-clock me-2"></i>Recent Orders
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <ui:repeat value="#{dashboardBean.recentOrders}" var="order">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Order ##{order.orderID}</strong><br/>
+                                        <small class="text-muted">#{order.userID.fullName} - #{dashboardBean.formatPrice(order.totalAmount)}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge #{dashboardBean.statusBadgeClass(order.status)}">
+                                            #{dashboardBean.statusDisplay(order.status)}
+                                        </span><br/>
+                                        <small class="text-muted">#{dashboardBean.formatDate(order.orderDate)}</small>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-12">
+                <h3><i class="fas fa-bolt me-2"></i>Quick Actions</h3>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <h:link outcome="/admin/admin_products.xhtml" styleClass="btn btn-primary w-100">
+                            <i class="fas fa-box me-2"></i>Manage Products
+                        </h:link>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h:link outcome="/admin/orders.xhtml" styleClass="btn btn-success w-100">
+                            <i class="fas fa-shopping-cart me-2"></i>Manage Orders
+                        </h:link>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h:link outcome="/admin/users.xhtml" styleClass="btn btn-info w-100">
+                            <i class="fas fa-users me-2"></i>Manage Users
+                        </h:link>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js Script -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueData = #{dashboardBean.revenueChartData};
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: revenueData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('en-US').format(value) + ' $';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Orders Status Chart
+            const ordersStatusCtx = document.getElementById('ordersStatusChart').getContext('2d');
+            const ordersStatusData = #{dashboardBean.ordersStatusChartData};
+            new Chart(ordersStatusCtx, {
+                type: 'doughnut',
+                data: ordersStatusData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Top Products Chart
+            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+            const topProductsData = #{dashboardBean.topProductsChartData};
+            new Chart(topProductsCtx, {
+                type: 'bar',
+                data: topProductsData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </ui:define>
+</ui:composition>
+</html>

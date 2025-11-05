@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/main.xhtml">
+
+    <ui:define name="title">Products - Gaming Equipment Store</ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="productForm" styleClass="container my-4">
+            <f:event type="preRenderView" listener="#{productBean.init}" />
+
+            <h:messages globalOnly="true" styleClass="alert alert-info"
+                        rendered="#{not empty facesContext.messageList}" />
+
+            <!-- Search Filters -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h:inputText value="#{productBean.searchKeyword}" styleClass="form-control"
+                                 requiredMessage="Search for products..." id="searchInput" />
+                </div>
+                <div class="col-md-3">
+                    <h:selectOneMenu value="#{productBean.selectedCategoryId}" styleClass="form-select">
+                        <f:selectItem itemLabel="All Categories" itemValue="" />
+                        <f:selectItems value="#{productBean.categories}" var="cat"
+                                       itemLabel="#{cat.categoryName}" itemValue="#{cat.categoryID}" />
+                        <f:ajax event="change" listener="#{productBean.applyFilters}" render="productForm" />
+                    </h:selectOneMenu>
+                </div>
+                
+                <div class="col-md-1 text-end">
+                    <h:commandButton value="Search" action="#{productBean.SearchKeyword}"
+                                     styleClass="btn btn-primary">
+                        <f:ajax render="productForm" execute="searchInput" />
+                    </h:commandButton>
+                </div>
+            </div>
+
+            
+
+            <!-- Product Listing -->
+            <div class="row">
+                <ui:repeat value="#{productBean.pagedProducts}" var="product">
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 text-center shadow-sm">
+                            <h:graphicImage value="/asset/images/#{product.image}"
+                                            alt="#{product.productName}"
+                                            style="height:180px; object-fit:cover;" class="card-img-top" />
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">#{product.productName}</h5>
+                                <p class="card-text text-muted">#{product.brand}</p>
+                                <p class="fw-bold text-danger mb-2">#{product.price}$</p>
+                                <p class="card-text small text-muted mb-3">
+                                    <i class="fas fa-box me-1"></i>Remaining: #{product.stock} items
+                                </p>
+                                <div class="mt-auto">
+                                    <div class="d-grid gap-2">
+                                        <!-- View Details Button -->
+                                        <h:link value="View Details" outcome="product-detail"
+                                                styleClass="btn btn-primary btn-sm">
+                                            <f:param name="id" value="#{product.productID}" />
+                                        </h:link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+
+            <!-- No Products Found -->
+            <h:panelGroup rendered="#{empty productBean.pagedProducts}">
+                <div class="text-center alert alert-info">
+                    <i class="fas fa-search fa-3x mb-3"></i>
+                    <h4>No products found</h4>
+                    <p>Try adjusting the filters or search keywords</p>
+                    <h:commandButton value="Reset Filters" action="#{productBean.resetFilters}"
+                                     styleClass="btn btn-outline-primary" />
+                </div>
+            </h:panelGroup>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                <h:commandButton value="Previous" action="#{productBean.previousPage}"
+                                 disabled="#{productBean.currentPage == 1}"
+                                 styleClass="btn btn-secondary mx-2" />
+                <span class="align-self-center">Page #{productBean.currentPage}</span>
+                <h:commandButton value="Next" action="#{productBean.nextPage}"
+                                 disabled="#{productBean.currentPage * productBean.itemsPerPage >= productBean.filteredProducts.size()}"
+                                 styleClass="btn btn-secondary mx-2" />
+            </div>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

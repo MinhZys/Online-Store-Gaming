@@ -1,0 +1,247 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <!-- Logo -->
+            <h:link outcome="index" styleClass="navbar-brand">
+                <i class="fas fa-gamepad me-2"></i>
+                Gaming Equipment Store
+            </h:link>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <h:link outcome="index" styleClass="nav-link">
+                            <i class="fas fa-home me-1"></i>Home
+                        </h:link>
+                    </li>
+                    <li class="nav-item">
+                        <h:link outcome="products" styleClass="nav-link">
+                            <i class="fas fa-box me-1"></i>Products
+                        </h:link>
+                    </li>
+                    <!-- Cart -->
+                    <li class="nav-item">
+                        <h:link outcome="cart" styleClass="nav-link">
+                            <i class="fas fa-shopping-cart me-1"></i>Cart
+                        </h:link>
+                    </li>
+                </ul>
+                <!-- Right Side Menu -->
+                <ul class="navbar-nav">
+                    
+
+                    <!-- User Menu - Show different options based on login status -->
+                    <ui:fragment rendered="#{!loginBean.isLoggedIn()}">
+                        <!-- Not logged in - Show Login/Register -->
+                        <li class="nav-item">
+                            <h:link outcome="login" styleClass="nav-link">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </h:link>
+                        </li>
+                        <li class="nav-item">
+                            <h:link outcome="register" styleClass="nav-link">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </h:link>
+                        </li>
+                    </ui:fragment>
+
+                    <ui:fragment rendered="#{loginBean.isLoggedIn()}">
+                        <!-- Logged in - Show User Menu -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>#{loginBean.currentUserName}
+                            </a>
+                            <ul class="dropdown-menu">
+                               
+                                <li>
+                                    <h:link outcome="orders" styleClass="dropdown-item">
+                                        <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                    </h:link>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <h:link outcome="logout" styleClass="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </h:link>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Admin Menu -->
+                        <ui:fragment rendered="#{loginBean.isAdmin()}">
+                            <li class="nav-item">
+                                <h:link outcome="admin/index" styleClass="nav-link">
+                                    <i class="fas fa-cog me-1"></i>Admin
+                                </h:link>
+                            </li>
+                        </ui:fragment>
+                    </ui:fragment>
+                </ul>           
+            </div>
+        </div>
+
+    </nav>
+
+    <style>
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: #ffc107 !important;
+            transform: scale(1.05);
+        }
+
+        .navbar-brand i {
+            color: #ffc107;
+            font-size: 1.2em;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 10px 15px !important;
+            margin: 0 5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffc107 !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link i {
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+
+        /* Search Bar */
+        .input-group {
+            max-width: 300px;
+        }
+
+        .form-control {
+            border-radius: 25px 0 0 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 15px;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffc107;
+            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+            color: white;
+        }
+
+        .btn-outline-light {
+            border-radius: 0 25px 25px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-light:hover {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #2D3748;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Responsive */
+        .navbar-toggler {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+        }
+
+        .navbar-collapse {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-nav {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .nav-link {
+                margin: 5px 0;
+                padding: 15px !important;
+            }
+
+            .input-group {
+                max-width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.2em;
+            }
+
+            .form-control {
+                font-size: 14px;
+            }
+        }
+
+        /* Animation */
+        .navbar {
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Active Link */
+        .nav-link.active {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107 !important;
+        }
+    </style>
+
+</ui:composition>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/main.xhtml">
+    
+    <ui:define name="title">Register Account</ui:define>
+
+    <ui:define name="content">
+        
+        <div class="container mt-5 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    
+                    <div class="card shadow-lg">
+                        <div class="card-header bg-primary text-white text-center py-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-user-plus"></i> Register
+                            </h2>
+                            <p class="mb-0 mt-2">Create a new account</p>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            
+                            <!-- Messages -->
+                            <h:messages globalOnly="true" 
+                                       styleClass="mb-3"
+                                       infoClass="alert alert-success"
+                                       errorClass="alert alert-danger" 
+                                       showSummary="true" 
+                                       showDetail="true" />
+                            
+                            <!-- Form -->
+                            <h:form>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        Full Name <span class="text-danger">*</span>
+                                    </label>
+                                    <h:inputText value="#{registerBean.fullName}" 
+                                                 styleClass="form-control form-control-lg"/>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        Email <span class="text-danger">*</span>
+                                    </label>
+                                    <h:inputText value="#{registerBean.email}" 
+                                                 styleClass="form-control form-control-lg"/>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        Password <span class="text-danger">*</span>
+                                    </label>
+                                    <h:inputSecret value="#{registerBean.password}" 
+                                                   redisplay="true"
+                                                   styleClass="form-control form-control-lg"/>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        Confirm Password <span class="text-danger">*</span>
+                                    </label>
+                                    <h:inputSecret value="#{registerBean.confirmPassword}" 
+                                                   redisplay="true"
+                                                   styleClass="form-control form-control-lg"/>
+                                </div>
+                                
+                                <div class="d-grid mb-3">
+                                    <h:commandButton value="REGISTER" 
+                                                     action="#{registerBean.register}"
+                                                     styleClass="btn btn-primary btn-lg" />
+                                </div>
+                                
+                             
+                                
+                            </h:form>
+                            
+                            <hr class="my-4"/>
+                            
+                            <div class="text-center">
+                                <p class="mb-0">
+                                    Already have an account? 
+                                    <h:link value="Login now" outcome="login" styleClass="text-primary fw-bold" />
+                                </p>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="card-footer bg-light text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt"></i> Your information is secure
+                            </small>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .card {
+                border: none;
+                border-radius: 15px;
+            }
+            
+            .card-header {
+                border-radius: 15px 15px 0 0 !important;
+            }
+            
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                font-weight: 600;
+                transition: all 0.3s;
+            }
+            
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            
+            .btn-outline-secondary {
+                border: 2px solid #6c757d;
+                font-weight: 600;
+            }
+            
+            .btn-outline-secondary:hover {
+                background-color: #6c757d;
+                color: white;
+            }
+            
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+                border-left: 4px solid #28a745;
+                border-radius: 8px;
+            }
+            
+            .alert-danger {
+                background-color: #f8d7da;
+                color: #721c24;
+                border-left: 4px solid #dc3545;
+                border-radius: 8px;
+            }
+        </style>
+        
+    </ui:define>
+    
+</ui:composition>
+
+</html>

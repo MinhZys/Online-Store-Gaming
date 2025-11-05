@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+    <h:head>
+        <title>My Orders</title>
+        <h:outputStylesheet library="css" name="style.css"/>
+        <style>
+            .order-card {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .order-header {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-bottom: 1px solid #ddd;
+                border-radius: 8px 8px 0 0;
+            }
+            .order-body {
+                padding: 15px;
+            }
+            .order-items {
+                margin-top: 15px;
+            }
+            .item-row {
+                display: flex;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+            .item-row:last-child {
+                border-bottom: none;
+            }
+            .item-image {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 4px;
+                margin-right: 15px;
+            }
+            .item-details {
+                flex: 1;
+            }
+            .item-name {
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 5px;
+            }
+            .item-info {
+                color: #666;
+                font-size: 14px;
+            }
+            .item-price {
+                font-weight: bold;
+                color: #e74c3c;
+                text-align: right;
+            }
+            .status-badge {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            .badge-warning {
+                background-color: #ffc107;
+                color: #000;
+            }
+            .badge-info {
+                background-color: #17a2b8;
+                color: #fff;
+            }
+            .badge-primary {
+                background-color: #007bff;
+                color: #fff;
+            }
+            .badge-success {
+                background-color: #28a745;
+                color: #fff;
+            }
+            .badge-danger {
+                background-color: #dc3545;
+                color: #fff;
+            }
+            .badge-secondary {
+                background-color: #6c757d;
+                color: #fff;
+            }
+            .no-orders {
+                text-align: center;
+                padding: 40px;
+                color: #666;
+            }
+            .order-summary {
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 4px;
+                margin-top: 10px;
+            }
+            .total-amount {
+                font-size: 18px;
+                font-weight: bold;
+                color: #e74c3c;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="/templates/main.xhtml">
+            <ui:define name="content">
+                <f:event type="preRenderView" listener="#{ordersBean.onPageLoad()}"/>
+                <div class="container mt-4">
+                    <h2>My Orders</h2>
+
+                    <h:messages globalOnly="true" styleClass="alert alert-info" showDetail="true"/>
+
+                    <h:form>
+                        <h:panelGroup rendered="#{ordersBean.hasOrders()}">
+                            <h:dataTable value="#{ordersBean.userOrders}" var="order" 
+                                         styleClass="table table-striped" 
+                                         rendered="#{ordersBean.hasOrders()}">
+
+                                <h:column>
+                                    <f:facet name="header">Order ID</f:facet>
+                                    <h:outputText value="#{order.orderID}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Order Date</f:facet>
+                                    <h:outputText value="#{order.orderDate}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </h:outputText>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Status</f:facet>
+                                    <span class="status-badge #{ordersBean.getStatusBadgeClass(order.status)}">
+                                        #{ordersBean.getStatusDisplay(order.status)}
+                                    </span>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Items</f:facet>
+                                    <h:outputText value="#{ordersBean.getTotalItemsInOrder(order)}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Total Amount</f:facet>
+                                    <h:outputText value="#{ordersBean.formatPrice(order.totalAmount)}" 
+                                                  styleClass="total-amount"/>
+                                    <h:outputText value=" $"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <h:commandButton value="View Details" 
+                                                     onclick="window.location.href='viewDetail.xhtml?orderId=#{order.orderID}'; return false;"
+                                                     styleClass="btn btn-sm btn-outline-primary"/>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{!ordersBean.hasOrders()}">
+                            <div class="no-orders">
+                                <h4>You have no orders yet</h4>
+                                <p>Start shopping to place your first order!</p>
+                                <h:commandButton value="Shop Now" 
+                                                 action="products" 
+                                                 styleClass="btn btn-primary"/>
+                            </div>
+                        </h:panelGroup>
+
+                    </h:form>
+
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

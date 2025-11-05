@@ -1,0 +1,330 @@
+/* Admin Product Management Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: -webkit-match-parent;
+    text-align: match-parent;
+}
+
+/* Form Styling */
+h:form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+h:panelGrid {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+h:panelGrid td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+h:outputLabel {
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+h:inputText, h:inputTextarea, h:selectOneMenu {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    color: #000 !important; /* Chữ nhập vào màu đen */
+    background-color: #fff;
+}
+
+h:inputText:focus, h:inputTextarea:focus, h:selectOneMenu:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    color: #000 !important; /* Giữ màu chữ đen khi focus */
+    background-color: #fff;
+}
+
+/* Đảm bảo tất cả input có chữ màu đen */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="tel"], 
+input[type="url"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+    color: #000 !important;
+    background-color: #fff;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus, 
+input[type="tel"]:focus, 
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+    color: #000 !important;
+    background-color: #fff;
+}
+
+h:inputTextarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Button Styling */
+h:commandButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    margin: 10px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+h:commandButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+h:commandButton:active {
+    transform: translateY(0);
+}
+
+/* Data Table Styling */
+h:dataTable {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+h:dataTable th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: bold;
+}
+
+h:dataTable td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+h:dataTable tr:hover {
+    background-color: #f8f9fa;
+}
+
+h:dataTable tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Image Styling */
+h:graphicImage {
+    border-radius: 5px;
+    border: 2px solid #ddd;
+    object-fit: cover;
+}
+
+/* Action Buttons in Table */
+h:dataTable h:commandButton {
+    padding: 6px 12px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+h:dataTable h:commandButton[value="Sửa"] {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+h:dataTable h:commandButton[value="Xóa"] {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+/* File Upload Styling */
+h:inputFile {
+    padding: 8px;
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100%;
+}
+
+/* Current Image Display */
+h:panelGroup {
+    margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    h:panelGrid {
+        display: block;
+    }
+    
+    h:panelGrid td {
+        display: block;
+        width: 100%;
+        padding: 8px 0;
+    }
+    
+    h:dataTable {
+        font-size: 12px;
+    }
+    
+    h:dataTable th,
+    h:dataTable td {
+        padding: 8px;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success/Error Messages */
+.message {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Button Groups */
+.button-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.btn-reset {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+.btn-test {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+}
+
+/* Form Enhancements */
+.product-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-grid {
+    margin-bottom: 20px;
+}
+
+/* Table Enhancements */
+.product-table-form {
+    overflow-x: auto;
+}
+
+.product-table {
+    min-width: 100%;
+}
+
+/* Field Validation */
+.error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.3) !important;
+}
+
+.valid {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3) !important;
+}
+
+.field-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Image Preview */
+.image-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 5px;
+    border: 2px solid #ddd;
+    object-fit: cover;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}

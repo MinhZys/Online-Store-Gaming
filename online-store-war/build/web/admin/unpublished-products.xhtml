@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+<ui:composition template="/templates/admin.xhtml">
+
+    <ui:define name="title">Quản lý sản phẩm chưa đăng bán - Admin Panel</ui:define>
+    <ui:define name="page-title">Sản phẩm chưa đăng bán</ui:define>
+
+    <ui:define name="content">
+
+    <!-- Display error/success messages -->
+    <h:messages globalOnly="true" showDetail="true" showSummary="true" 
+                styleClass="alert" infoClass="alert alert-success" 
+                warnClass="alert alert-warning" errorClass="alert alert-danger"/>
+
+    <!-- Page Description -->
+    <div class="alert alert-info mb-4">
+        <h5><i class="fas fa-info-circle me-2"></i>Thông tin</h5>
+        <p class="mb-0">Trang này hiển thị các sản phẩm đã được thêm vào hệ thống nhưng chưa được đăng bán cho khách hàng. 
+        Bạn có thể xem chi tiết và quyết định đăng bán hoặc chỉnh sửa sản phẩm.</p>
+    </div>
+
+    <!-- Unpublished Products Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-eye-slash me-2"></i>Danh sách sản phẩm chưa đăng bán</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <h:form>
+                    <h:dataTable value="#{adminProductBean.unpublishedProducts}" var="p" styleClass="table table-striped table-hover">
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>ID</strong>
+                            </f:facet>
+                            <span class="badge bg-primary">#{p.productID}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Tên sản phẩm</strong>
+                            </f:facet>
+                            <strong>#{p.productName}</strong>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Danh mục</strong>
+                            </f:facet>
+                            <span class="badge bg-info">#{p.categoryID.categoryName}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Nhà cung cấp</strong>
+                            </f:facet>
+                            <span class="badge bg-warning">#{p.supplierID.supplierName}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Giá</strong>
+                            </f:facet>
+                            <span class="text-success fw-bold">$#{p.price}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Tồn kho</strong>
+                            </f:facet>
+                            <span class="badge bg-secondary">#{p.stock}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Hình ảnh</strong>
+                            </f:facet>
+                            <h:graphicImage value="/asset/images/#{p.image}" width="60" height="60" 
+                                           styleClass="img-thumbnail" 
+                                           rendered="#{not empty p.image}"/>
+                            <span class="text-muted" 
+                                  rendered="#{empty p.image}">
+                                Không có hình
+                            </span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Ngày tạo</strong>
+                            </f:facet>
+                            <small class="text-muted">#{p.createdAt}</small>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Thao tác</strong>
+                            </f:facet>
+                            <div class="btn-group" role="group">
+                                <!-- Edit Button -->
+                                <h:commandButton value="Chỉnh sửa" action="#{adminProductBean.editProduct}" 
+                                               styleClass="btn btn-sm btn-outline-primary">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-edit me-1"></i>
+                                </h:commandButton>
+
+                                <!-- Publish Button -->
+                                <h:commandButton value="Đăng bán" action="#{adminProductBean.publishProduct}" 
+                                               styleClass="btn btn-sm btn-success">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-eye me-1"></i>
+                                </h:commandButton>
+
+                                <!-- Delete Button -->
+                                <h:commandButton value="Xóa" action="#{adminProductBean.deleteProduct}"
+                                               styleClass="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-trash me-1"></i>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="mt-4">
+        <h:link value="← Quay lại quản lý sản phẩm" outcome="admin_products" styleClass="btn btn-outline-secondary me-2"/>
+        <h:link value="Thêm sản phẩm mới" outcome="admin_products" styleClass="btn btn-primary"/>
+    </div>
+
+    </ui:define>
+</ui:composition>
+</html>

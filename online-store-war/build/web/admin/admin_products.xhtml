@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+<ui:composition template="/templates/admin.xhtml">
+
+    <ui:define name="title">Product Management - Admin Panel</ui:define>
+    <ui:define name="page-title">Product Management</ui:define>
+
+    <ui:define name="content">
+
+    <!-- Display error/success messages -->
+    <h:messages globalOnly="true" showDetail="true" showSummary="true" 
+                styleClass="alert" infoClass="alert alert-success" 
+                warnClass="alert alert-warning" errorClass="alert alert-danger"/>
+
+    <!-- Add/Edit Form -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add/Edit Product</h5>
+            <div>
+                <h:link value="Products not for sale" outcome="unpublished-products" styleClass="btn btn-warning btn-sm me-2">
+                    <i class="fas fa-eye-slash me-1"></i>
+                </h:link>
+                <span class="badge bg-info">#{adminProductBean.unpublishedProducts.size()} Not listed for sale</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h:form enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Product Name:" styleClass="form-label"/>
+                        <h:inputText value="#{adminProductBean.product.productName}" required="true" styleClass="form-control" 
+                                   maxlength="100"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Price:" styleClass="form-label"/>
+                        <h:inputText value="#{adminProductBean.product.price}" styleClass="form-control"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Category:" styleClass="form-label"/>
+                        <h:selectOneMenu value="#{adminProductBean.selectedCategoryId}" styleClass="form-select">
+                            <f:selectItem itemLabel="Select Category" itemValue=""/>
+                            <f:selectItems value="#{adminProductBean.categories}" var="cat" 
+                                         itemLabel="#{cat.categoryName}" itemValue="#{cat.categoryID}"/>
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Supplier:" styleClass="form-label"/>
+                        <h:selectOneMenu value="#{adminProductBean.selectedSupplierId}" styleClass="form-select">
+                            <f:selectItem itemLabel="Select Supplier" itemValue=""/>
+                            <f:selectItems value="#{adminProductBean.suppliers}" var="sup" 
+                                         itemLabel="#{sup.supplierName}" itemValue="#{sup.supplierID}"/>
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Stock:" styleClass="form-label"/>
+                        <h:inputText value="#{adminProductBean.product.stock}" styleClass="form-control"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h:outputLabel value="Product Image:" styleClass="form-label"/>
+                        <h:inputFile value="#{adminProductBean.file}" styleClass="form-control"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h:outputLabel value="Description:" styleClass="form-label"/>
+                    <h:inputTextarea value="#{adminProductBean.product.description}" styleClass="form-control" rows="3"/>
+                </div>
+
+                <!-- Display current image when editing -->
+                <h:panelGroup rendered="#{adminProductBean.product.productID != null and adminProductBean.product.image != null}">
+                    <div class="mb-3">
+                        <h:outputLabel value="Current Image:" styleClass="form-label"/>
+                        <div>
+                            <h:graphicImage value="/asset/images/#{adminProductBean.product.image}" width="100" height="100" styleClass="img-thumbnail"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <div class="text-center">
+                    <h:commandButton value="Save" action="#{adminProductBean.saveProduct}" styleClass="btn btn-success me-2"/>
+                    <h:commandButton value="Reset" action="#{adminProductBean.resetForm}" styleClass="btn btn-secondary me-2"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Product List</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <h:form>
+                    <h:dataTable value="#{adminProductBean.productList}" var="p" styleClass="table table-striped table-hover">
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>ID</strong>
+                            </f:facet>
+                            <span class="badge bg-primary">#{p.productID}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Product Name</strong>
+                            </f:facet>
+                            <strong>#{p.productName}</strong>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Category</strong>
+                            </f:facet>
+                            <span class="badge bg-info">#{p.categoryID.categoryName}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Supplier</strong>
+                            </f:facet>
+                            <span class="badge bg-warning">#{p.supplierID.supplierName}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Price</strong>
+                            </f:facet>
+                            <span class="text-success fw-bold">$#{p.price}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Stock</strong>
+                            </f:facet>
+                            <span class="badge bg-secondary">#{p.stock}</span>
+                        </h:column>
+
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Image</strong>
+                            </f:facet>
+                            <h:graphicImage value="/asset/images/#{p.image}" width="60" height="60" 
+                                           styleClass="img-thumbnail" 
+                                           rendered="#{not empty p.image}"/>
+                            <span class="text-muted" 
+                                  rendered="#{empty p.image}">
+                              
+                            </span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Actions</strong>
+                            </f:facet>
+                            <div class="btn-group" role="group">
+                                <!-- Edit Button -->
+                                <h:commandButton value="Edit" action="#{adminProductBean.editProduct}" 
+                                               styleClass="btn btn-sm btn-outline-primary">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-edit me-1"></i>
+                                </h:commandButton>
+
+                                <!-- Publish/Unpublish Button -->
+                                <h:commandButton value="published" action="#{adminProductBean.publishProduct}" 
+                                               styleClass="btn btn-sm btn-success"
+                                               rendered="#{not p.status}">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-eye me-1"></i>
+                                </h:commandButton>
+                                
+                                <h:commandButton value="unpublished" action="#{adminProductBean.unpublishProduct}" 
+                                               styleClass="btn btn-sm btn-warning"
+                                               rendered="#{p.status}">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-eye-slash me-1"></i>
+                                </h:commandButton>
+
+                                <!-- Delete Button -->
+                                <h:commandButton value="Delete" action="#{adminProductBean.deleteProduct}"
+                                               styleClass="btn btn-sm btn-outline-danger"
+                                               disabled="#{p.status}"
+                                               title="#{p.status ? 'Please cancel the listing before deleting' : ''}"
+                                               onclick="return #{p.status ? 'alert(\'Product is for sale. Please cancel the listing before deleting.\'); false' : 'confirm(\'Are you sure you want to delete this product?\')'}">
+                                    <f:setPropertyActionListener target="#{adminProductBean.selectedProductId}" value="#{p.productID}"/>
+                                    <i class="fas fa-trash me-1"></i>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    </ui:define>
+</ui:composition>
+</html>
